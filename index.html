@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-page-node-id="rLf1g8mIJTb4Tjthsm2hwZ">
-<head data-page-node-id="yCMfnraFJspQ8VGmKV33d9">
-<meta charset="UTF-8" data-page-node-id="E2DDMHXpWxxRGFl1iKAdSG">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" data-page-node-id="BtB928ReXE37FccuALUquq">
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>🐍 贪吃蛇 · Vibecoding 作业</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -101,39 +101,39 @@
   footer { margin-top: 18px; font-size: 12px; color: #5f8794; }
 </style>
 </head>
-<body data-page-node-id="U9qWCyzTE3Gie3ZxfNHRo5">
-  <h1 data-page-node-id="HrNWFL8RkAbmesb4Q53aXF">🐍 贪吃蛇</h1>
-  <div class="subtitle" data-page-node-id="wmSGC6vBSnbenjsX9CPUAA">Vibecoding 部署课 · 课后作业</div>
+<body>
+  <h1>🐍 贪吃蛇</h1>
+  <div class="subtitle">Vibecoding 部署课 · 课后作业</div>
 
-  <div class="panel" data-page-node-id="VZXLe2CFb2HK1KlGl4Hs8h">
-    <div class="card" data-page-node-id="BuOtHQmcwEdH6TihWw10Oy"><div class="label" data-page-node-id="kPC32NH9ucSbLb5FfRphXp">当前得分</div><div class="value" id="score" data-page-node-id="LUfC2xlDd477do1NixDWNF">0</div></div>
-    <div class="card best" data-page-node-id="NWpP6OTrjlGVOoLUuCdzpQ"><div class="label" data-page-node-id="7zVYlWCSsGOy9miPo7sgO0">🏆 历史最高</div><div class="value" id="best" data-page-node-id="saYvafLfZ94GwS9zUgIq3d">0</div></div>
-    <div class="card" data-page-node-id="zh4Arz8iZ6hsygyNSIIEjM"><div class="label" data-page-node-id="B5nUSnvGfSQQOamBToQOh3">当前速度</div><div class="value" id="speed" data-page-node-id="QgyHClxFljFbrKDdFrcC35">1</div></div>
+  <div class="panel">
+    <div class="card"><div class="label">当前得分</div><div class="value" id="score">0</div></div>
+    <div class="card best"><div class="label">🏆 历史最高</div><div class="value" id="best">0</div></div>
+    <div class="card"><div class="label">当前速度</div><div class="value" id="speed">1</div></div>
   </div>
 
-  <div class="board-wrap" data-page-node-id="acZJJEkDTSEw4irqCw7Byj">
-    <canvas id="board" width="420" height="420" data-page-node-id="shVa1MDMPYsuAg1Ekjtbzt"></canvas>
-    <div class="overlay" id="startOverlay" data-page-node-id="l6ZROSc9aCvxEtEEeKpTHu">
-      <h2 data-page-node-id="vhFLG47WsEy4R2g6vQ5f8t">准备好了吗？</h2>
-      <p data-page-node-id="0GTTT3hKMgaFf9Tc7jX83J">方向键 / WASD 控制移动<br data-page-node-id="Kd12ow47DhENxSMDpD7Hed">手机上可以直接滑动屏幕</p>
-      <button id="startBtn" data-page-node-id="LTGa8PeETJj8Rz6pbPXqYo">开始游戏</button>
+  <div class="board-wrap">
+    <canvas id="board" width="420" height="420"></canvas>
+    <div class="overlay" id="startOverlay">
+      <h2>准备好了吗？</h2>
+      <p>方向键 / WASD 控制移动<br>手机上可以直接滑动屏幕</p>
+      <button id="startBtn">开始游戏</button>
     </div>
-    <div class="overlay" id="overOverlay" style="display:none;" data-page-node-id="K7pyjYwyXB8nTBx9qR1OT7">
-      <h2 id="overTitle" data-page-node-id="WUEBqKR6jmSs1yPPFLUQe9">游戏结束</h2>
-      <p id="overText" data-page-node-id="uiR3EK3IBCp9pOI4bZuNVr"></p>
-      <button id="retryBtn" data-page-node-id="fGxh6mF63D0QZDyodmujUh">再来一局</button>
+    <div class="overlay" id="overOverlay" style="display:none;">
+      <h2 id="overTitle">游戏结束</h2>
+      <p id="overText"></p>
+      <button id="retryBtn">再来一局</button>
     </div>
   </div>
 
-  <div class="controls" data-page-node-id="GSEfvGnfKtdIy0iOwal5Jf">
-    <button class="up" data-dir="up" data-page-node-id="YYC9tYTEgXcxufUTd4Ag9v">▲</button>
-    <button class="left" data-dir="left" data-page-node-id="zNvFDszoV0kOfhVWU9PdtY">◀</button>
-    <button class="down" data-dir="down" data-page-node-id="MynimmD1IIpRQMgLgkoYYN">▼</button>
-    <button class="right" data-dir="right" data-page-node-id="CFXq4JxH1JD2bT56aJhelC">▶</button>
+  <div class="controls">
+    <button class="up" data-dir="up">▲</button>
+    <button class="left" data-dir="left">◀</button>
+    <button class="down" data-dir="down">▼</button>
+    <button class="right" data-dir="right">▶</button>
   </div>
 
-  <div class="hint" data-page-node-id="gB2HH9DMhMEVtnVOty8Kq8">空格键：暂停 / 继续</div>
-  <footer data-page-node-id="2Ho7JJfXG8Ivi8sT66iwlY">Deployed on Vercel · Powered by Vibecoding</footer>
+  <div class="hint">空格键：暂停 / 继续</div>
+  <footer>Deployed on Vercel · Powered by Vibecoding</footer>
 
 <script>
 (function () {
