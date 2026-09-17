@@ -1,0 +1,142 @@
+/* ============================================================
+   课表聚合器 Web 版 - 样式
+   设计原则：信息清晰第一，无花哨动画，浅色简洁
+   ============================================================ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f7f8fa;
+  color: #26303d;
+  max-width: 640px;        /* 手机/桌面都居中显示 */
+  margin: 0 auto;
+  padding: 16px 16px 96px; /* 底部留出添加按钮空间 */
+}
+
+/* ---------- 顶部 ---------- */
+header { padding: 4px 2px 12px; }
+h1 { font-size: 22px; color: #0c447c; }
+.subtitle { font-size: 13px; color: #8a93a3; margin-top: 4px; }
+
+.semester {
+  margin-top: 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: #5f6b7a; flex-wrap: wrap;
+}
+.semester input {
+  border: 1px solid #d8dee7; border-radius: 6px;
+  padding: 4px 8px; font-size: 13px; color: #26303d; background: #fff;
+}
+.week-now { color: #185fa5; font-weight: 600; }
+
+/* ---------- 今天/明天切换 ---------- */
+.tabs {
+  display: flex; background: #fff; border: 1px solid #e4e8ef;
+  border-radius: 10px; overflow: hidden;
+}
+.tab {
+  flex: 1; padding: 10px 0; border: none; background: none;
+  font-size: 15px; color: #5f6b7a; cursor: pointer;
+}
+.tab.active { color: #fff; background: #185fa5; font-weight: 600; }
+
+.date-label { font-size: 13px; color: #8a93a3; margin: 12px 2px 4px; }
+
+/* ---------- 时间轴卡片 ---------- */
+.timeline { display: flex; flex-direction: column; gap: 10px; }
+
+.empty {
+  text-align: center; color: #8a93a3; font-size: 14px;
+  padding: 48px 0; background: #fff; border-radius: 10px;
+  border: 1px dashed #d8dee7;
+}
+
+/* 课程卡片：蓝色 */
+.card {
+  position: relative;
+  background: #e6f1fb; border: 1px solid #b5d4f4;
+  border-left: 4px solid #185fa5;
+  border-radius: 10px; padding: 12px 76px 12px 14px;
+}
+.card .time { font-size: 12px; color: #185fa5; font-weight: 600; }
+.card .title { font-size: 16px; margin-top: 2px; word-break: break-all; }
+.card .meta {
+  font-size: 13px; color: #5f6b7a; margin-top: 6px;
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+}
+
+/* 任务卡片：橙色 */
+.card-task { background: #faeeda; border-color: #fac775; border-left-color: #ba7517; }
+.card-task .time { color: #854f0b; }
+
+/* 已完成：置灰 */
+.card.done {
+  background: #f1efe8; border-color: #d3d1c7;
+  border-left-color: #888780; opacity: 0.75;
+}
+.card.done .title { text-decoration: line-through; color: #888780; }
+.card.done .time { color: #888780; }
+
+.tag {
+  background: rgba(255, 255, 255, 0.75); border-radius: 4px;
+  padding: 1px 6px; font-size: 12px; color: #5f6b7a;
+}
+.tag-countdown { font-weight: 600; color: #854f0b; }
+.tag-countdown.danger { color: #a32d2d; }
+.tag-overdue { background: #fcebeb; color: #a32d2d; font-weight: 600; }
+
+/* 卡片右上角操作：完成勾选 + 删除 */
+.card-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; align-items: center; }
+.card-actions input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+.del-btn {
+  border: none; background: none; color: #b8c0cc;
+  font-size: 15px; cursor: pointer; padding: 2px 6px; line-height: 1;
+}
+.del-btn:hover { color: #a32d2d; }
+
+/* ---------- 添加按钮 ---------- */
+.add-btn {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  width: min(400px, calc(100% - 32px));
+  padding: 13px 0; border: none; border-radius: 12px;
+  background: #185fa5; color: #fff; font-size: 16px; cursor: pointer;
+  box-shadow: 0 4px 12px rgba(24, 95, 165, 0.3);
+}
+.add-btn:hover { background: #0c447c; }
+
+/* ---------- 添加弹窗 ---------- */
+.modal-mask {
+  position: fixed; inset: 0; background: rgba(38, 48, 61, 0.45);
+  display: flex; align-items: flex-end; justify-content: center; z-index: 10;
+}
+.modal {
+  background: #fff; width: min(640px, 100%);
+  border-radius: 16px 16px 0 0; padding: 16px 20px 24px;
+  max-height: 88vh; overflow-y: auto;
+}
+.modal-tabs { display: flex; border-bottom: 1px solid #e4e8ef; margin-bottom: 8px; }
+.modal-tab {
+  flex: 1; padding: 10px 0; border: none; background: none;
+  font-size: 15px; color: #5f6b7a; cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.modal-tab.active { color: #185fa5; font-weight: 600; border-bottom-color: #185fa5; }
+
+.modal-form .row { padding: 10px 0; }
+.modal-form .row.two { display: flex; gap: 12px; }
+.modal-form .row.two > div { flex: 1; }
+.modal-form label { display: block; font-size: 13px; color: #8a93a3; margin-bottom: 6px; }
+.modal-form input, .modal-form select {
+  width: 100%; border: 1px solid #d8dee7; border-radius: 8px;
+  padding: 9px 10px; font-size: 14px; color: #26303d; background: #fff;
+}
+.form-actions { display: flex; gap: 12px; margin-top: 12px; }
+.form-actions button {
+  flex: 1; padding: 12px 0; border: none; border-radius: 10px;
+  font-size: 15px; cursor: pointer;
+}
+.btn-primary { background: #185fa5; color: #fff; }
+.btn-primary:hover { background: #0c447c; }
+.btn-ghost { background: #f1efe8; color: #5f6b7a; }
+
+footer { text-align: center; font-size: 12px; color: #b8c0cc; margin-top: 24px; }
