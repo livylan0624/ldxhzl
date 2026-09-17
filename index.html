@@ -1,339 +1,146 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>🐍 贪吃蛇 · Vibecoding 作业</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body {
-    font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: #e8f4f8;
-    padding: 20px;
-    user-select: none;
-  }
-  h1 {
-    font-size: 28px;
-    letter-spacing: 2px;
-    margin-bottom: 6px;
-    background: linear-gradient(90deg, #4ade80, #22d3ee);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .subtitle { font-size: 13px; color: #9fc3cf; margin-bottom: 16px; }
-  .panel {
-    display: flex;
-    gap: 14px;
-    margin-bottom: 14px;
-    width: 100%;
-    max-width: 420px;
-  }
-  .card {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 12px;
-    padding: 10px 14px;
-    text-align: center;
-    backdrop-filter: blur(6px);
-  }
-  .card .label { font-size: 12px; color: #9fc3cf; margin-bottom: 4px; }
-  .card .value { font-size: 24px; font-weight: 700; color: #4ade80; font-variant-numeric: tabular-nums; }
-  .card.best .value { color: #fbbf24; }
-  #board {
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 14px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
-    max-width: 100%;
-    touch-action: none;
-  }
-  .overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    background: rgba(10, 25, 35, 0.82);
-    border-radius: 14px;
-    text-align: center;
-    padding: 20px;
-  }
-  .board-wrap { position: relative; }
-  .overlay h2 { font-size: 26px; }
-  .overlay p { font-size: 14px; color: #b8d4dc; line-height: 1.7; }
-  button {
-    font-family: inherit;
-    font-size: 16px;
-    font-weight: 600;
-    color: #06251a;
-    background: linear-gradient(135deg, #4ade80, #22d3ee);
-    border: none;
-    border-radius: 10px;
-    padding: 12px 34px;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-  }
-  button:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(34, 211, 238, 0.35); }
-  button:active { transform: translateY(0); }
-  .controls { margin-top: 16px; display: grid; grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(2, 56px); gap: 8px; }
-  .controls button {
-    width: 56px; height: 56px; padding: 0;
-    font-size: 22px; border-radius: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #e8f4f8; border: 1px solid rgba(255, 255, 255, 0.15);
-  }
-  .controls button:hover { background: rgba(255, 255, 255, 0.18); box-shadow: none; transform: none; }
-  .controls .up { grid-column: 2; }
-  .controls .left { grid-column: 1; grid-row: 2; }
-  .controls .down { grid-column: 2; grid-row: 2; }
-  .controls .right { grid-column: 3; grid-row: 2; }
-  .hint { margin-top: 12px; font-size: 12px; color: #7da5b3; }
-  footer { margin-top: 18px; font-size: 12px; color: #5f8794; }
-</style>
+<html lang="zh-CN" data-page-node-id="wDfkDw2tqJGghewu7Gd6K4">
+<head data-page-node-id="dSWkdxbTomnJ01bZ9arFm5">
+  <meta charset="UTF-8" data-page-node-id="dqCRgrIEYSJGHCoIKLcwpQ">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="tSEpXD6kW3x3W3phPoCNby">
+  <title>课表聚合器 - 课程与任务时间轴</title>
+  <meta name="description" content="把散落在教务系统、学习通、微信群、邮件里的课程与任务，聚合到一条统一的时间轴" data-page-node-id="2AWEr65SZLDhTPEKUfvVtB">
+  <link rel="stylesheet" href="css/style.css" data-page-node-id="AZAFkmMlgGSW32hx3U5ETa">
 </head>
-<body>
-  <h1>🐍 贪吃蛇</h1>
-  <div class="subtitle">Vibecoding 部署课 · 课后作业</div>
-
-  <div class="panel">
-    <div class="card"><div class="label">当前得分</div><div class="value" id="score">0</div></div>
-    <div class="card best"><div class="label">🏆 历史最高</div><div class="value" id="best">0</div></div>
-    <div class="card"><div class="label">当前速度</div><div class="value" id="speed">1</div></div>
-  </div>
-
-  <div class="board-wrap">
-    <canvas id="board" width="420" height="420"></canvas>
-    <div class="overlay" id="startOverlay">
-      <h2>准备好了吗？</h2>
-      <p>方向键 / WASD 控制移动<br>手机上可以直接滑动屏幕</p>
-      <button id="startBtn">开始游戏</button>
+<body data-page-node-id="OcFbtH16K4dHV8p3Ia8zhK">
+  <!-- 顶部标题与学期设置 -->
+  <header data-page-node-id="HOT833USh0kFRClZixHZN5">
+    <h1 data-page-node-id="7AQc4uU9TjyQAaLZEXduGj">课表聚合器</h1>
+    <p class="subtitle" data-page-node-id="g88VvQ9KiLZwi1nhH68bQw">课程 · 任务 · 一条时间轴</p>
+    <div class="semester" data-page-node-id="iXC01zKaec2H74eYhEAJQ6">
+      <label for="semesterStart" data-page-node-id="EyNiD9c0AGcTcH5FxUrJzF">学期第 1 周的周一</label>
+      <input type="date" id="semesterStart" data-page-node-id="z0jSf0LeouU9XCn8ONyDUW">
+      <span class="week-now" id="weekNow" data-page-node-id="BXqJ6WKO8hZXMC6T9Alkyx"></span>
     </div>
-    <div class="overlay" id="overOverlay" style="display:none;">
-      <h2 id="overTitle">游戏结束</h2>
-      <p id="overText"></p>
-      <button id="retryBtn">再来一局</button>
+  </header>
+
+  <!-- 今天 / 明天 切换 -->
+  <nav class="tabs" data-page-node-id="MNngULLm7PH3UQaM34NAoC">
+    <button class="tab active" data-day="0" data-page-node-id="szcWs8D2BGxuvJ7f6O47SY">今天</button>
+    <button class="tab" data-day="1" data-page-node-id="ILHdWMPl9T3IiofmhgOkAt">明天</button>
+  </nav>
+
+  <!-- 当前日期信息 -->
+  <div class="date-label" id="dateLabel" data-page-node-id="XC4rlFqrs5TYkIsPNfr9dp"></div>
+
+  <!-- 时间轴主体 -->
+  <main class="timeline" id="timeline" data-page-node-id="ahRCuhdQG9Hz9CEbDbuC4Y"></main>
+
+  <!-- 添加按钮 -->
+  <button class="add-btn" id="addBtn" data-page-node-id="YHFm2k5HDMpERk8fQbQEVG">+ 添加课程 / 任务</button>
+
+  <!-- 添加弹窗 -->
+  <div class="modal-mask" id="modalMask" hidden data-page-node-id="YhcGmFFzDUF08ZrHSJVD8l">
+    <div class="modal" data-page-node-id="Y63SwEUIYpUNoe6jbZ7fZt">
+      <div class="modal-tabs" data-page-node-id="wHKOLlOJvhdPPpl7dfkRtG">
+        <button class="modal-tab active" data-form="course" data-page-node-id="XgNJE06vT0Lh2sclQvkHBC">添加课程</button>
+        <button class="modal-tab" data-form="task" data-page-node-id="VXeS39TXJBtkfBJ4fiGs5C">添加任务</button>
+      </div>
+
+      <!-- 课程表单 -->
+      <form id="courseForm" class="modal-form" data-page-node-id="a3TWwLpKo6I3KatEL7v4z9">
+        <div class="row" data-page-node-id="GGeGIQWUJOJLHySJ4frIhx">
+          <label data-page-node-id="CTZDtvIFhp24LGcbpJR4gv">课程名 *</label>
+          <input name="name" placeholder="如：高等数学(下)" maxlength="50" required data-page-node-id="7tNv0ANPn9SvJdjnbzRqO6">
+        </div>
+        <div class="row two" data-page-node-id="NwnWtYRYeWCPamHvrlcIhc">
+          <div data-page-node-id="z9ySpC8LGQISzWsPLfavD9">
+            <label data-page-node-id="vMkKYJQj6nJKFeRP8iT4LA">教师</label>
+            <input name="teacher" placeholder="选填" maxlength="20" data-page-node-id="6ldvpbNDjkpbQBJKNQdV7p">
+          </div>
+          <div data-page-node-id="hrOuCGc4H9mFpI94W62pl3">
+            <label data-page-node-id="H2WvSnn9ROxOIz0yF2ct8Z">教室</label>
+            <input name="classroom" placeholder="选填" maxlength="30" data-page-node-id="IYeu5g6aQcRyzDsfOlsygO">
+          </div>
+        </div>
+        <div class="row" data-page-node-id="xgMX0I1uxY9fRNhtCaa3JD">
+          <label data-page-node-id="xTuJV3O905YWOLDN1SoGaX">星期 *</label>
+          <select name="weekday" id="weekdaySel" required data-page-node-id="AaZqaBXELMF4qduoeYuEVK"></select>
+        </div>
+        <div class="row two" data-page-node-id="VSbOvVLp0QRAIJwepPz6Ah">
+          <div data-page-node-id="7cDnNWeM25hu7awM5XLAMY">
+            <label data-page-node-id="C0c6kGXJO3HIy5FonbMir1">开始节次 *</label>
+            <select name="startSection" id="startSectionSel" required data-page-node-id="WFIfzdvPM1NdAGk0FbxPFq"></select>
+          </div>
+          <div data-page-node-id="pIQq4LFMaJSbSBUO5geqio">
+            <label data-page-node-id="qVSBPMGwu3CO8FxR8hcDrT">结束节次 *</label>
+            <select name="endSection" id="endSectionSel" required data-page-node-id="EFMcul1ypReBPPaX10P1DK"></select>
+          </div>
+        </div>
+        <div class="row two" data-page-node-id="zXtQQf3Y1JeRlCDz6CATk6">
+          <div data-page-node-id="uEx79HHxRkvrdZHvwwqKMi">
+            <label data-page-node-id="z42OE4gADyd96G8QpU6LMh">开始周次 *</label>
+            <select name="weekStart" id="weekStartSel" required data-page-node-id="Kvu8LOmurfLBFiTlylP2ku"></select>
+          </div>
+          <div data-page-node-id="uIUsYBdwfjGwHhX8M6n5Xz">
+            <label data-page-node-id="kuaUntRjN1a6nU8JrJWUB1">结束周次 *</label>
+            <select name="weekEnd" id="weekEndSel" required data-page-node-id="N0E9LABiUt5Q4PQdoB0pcg"></select>
+          </div>
+        </div>
+        <div class="row" data-page-node-id="brdPxntflCQenc9e5mS5Ly">
+          <label data-page-node-id="JdIXFvzCErF4KJQvCsZbqw">重复方式 *</label>
+          <select name="weekType" data-page-node-id="kZpFxFYnxlqQ0JCF3145AH">
+            <option value="all" data-page-node-id="gEUhay5U2bNAQ7MEVDYU9P">每周</option>
+            <option value="odd" data-page-node-id="C9KqOPNtuXOAIHkCPihiPE">单周</option>
+            <option value="even" data-page-node-id="6Wz1GwDmJHpd7eqI0IjFqj">双周</option>
+          </select>
+        </div>
+        <div class="form-actions" data-page-node-id="o6P0qF4v4kTEBGUgRRUFvi">
+          <button type="button" class="btn-ghost" id="cancelBtn" data-page-node-id="7IOBaYlmY8ZKMTCgtTwiRv">取消</button>
+          <button type="submit" class="btn-primary" data-page-node-id="KTNzjMX5pkLXyMySJNUfDn">保存课程</button>
+        </div>
+      </form>
+
+      <!-- 任务表单 -->
+      <form id="taskForm" class="modal-form" hidden data-page-node-id="cf4I6Iv2JyWTfHgrkl9Uhk">
+        <div class="row" data-page-node-id="TTMBJ7QC7jURhQZksyh4K5">
+          <label data-page-node-id="uGldKXUAsnhvDSt8fINZ8E">任务名 *</label>
+          <input name="title" placeholder="如：交高数第三章作业" maxlength="100" required data-page-node-id="OgacEya9KcQy8BJXC8PzeC">
+        </div>
+        <div class="row" data-page-node-id="sCwps0F0sdjyoexszw3s0a">
+          <label data-page-node-id="K9UPU1XiVEJt7CS0DnQYhz">所属课程</label>
+          <select name="courseIndex" id="taskCourseSel" data-page-node-id="7RkmZCAxqgByMHqveJpGMc"></select>
+        </div>
+        <div class="row two" data-page-node-id="7nY3FKbzwtypB16dS8KL33">
+          <div data-page-node-id="EuB0DdE9OFY37m9dqpPNe9">
+            <label data-page-node-id="ifs9Z6s2ljtH1g5KCrRyOD">截止日期 *</label>
+            <input type="date" name="deadlineDate" required data-page-node-id="P6uinQDwDYaEfeWMhti7DM">
+          </div>
+          <div data-page-node-id="bmAjr2MmH7OOWkpkzVBlBw">
+            <label data-page-node-id="bFgvxAZOLAnyDkAFnPwfMd">截止时间 *</label>
+            <input type="time" name="deadlineTime" value="23:59" required data-page-node-id="J8v7pYoBRFHBHFPO4ouJ8v">
+          </div>
+        </div>
+        <div class="row" data-page-node-id="wEdA5CLUxivQv2Dy5Ad5ml">
+          <label data-page-node-id="EeyKFZuKfCkGeBAh1d2aZE">来源 *</label>
+          <select name="source" data-page-node-id="Y02n4EJNY23LN2S1aWxAEH">
+            <option value="manual" data-page-node-id="jHQejttO3o255mLBbu0YT2">手动添加</option>
+            <option value="xuexitong" data-page-node-id="qySBTt0nAdkjqq9OJwTWoM">学习通</option>
+            <option value="email" data-page-node-id="gMNrtrsTaUWckUCMECel8H">邮件</option>
+            <option value="group" data-page-node-id="cBhYMcccnDNt6yqYKkNCvR">微信群</option>
+            <option value="jiaowu" data-page-node-id="5YBRmGrBUlHHWrEuPkiFGG">教务系统</option>
+          </select>
+        </div>
+        <div class="row" data-page-node-id="0MlrxiMWBgAEFGelAouM8M">
+          <label data-page-node-id="bRAECaWsythFwlKdXXSepX">备注</label>
+          <input name="remark" placeholder="选填，作业要求等" maxlength="200" data-page-node-id="hLy9IJv8yXArJmGSpnLFIU">
+        </div>
+        <div class="form-actions" data-page-node-id="F0SAP6N7kzV7W32GtJIosV">
+          <button type="button" class="btn-ghost" id="cancelBtn2" data-page-node-id="AuzArIIf4pDqi19mTSqM6r">取消</button>
+          <button type="submit" class="btn-primary" data-page-node-id="LRxG5fy3IPZyz1xPlYAvI3">保存任务</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <div class="controls">
-    <button class="up" data-dir="up">▲</button>
-    <button class="left" data-dir="left">◀</button>
-    <button class="down" data-dir="down">▼</button>
-    <button class="right" data-dir="right">▶</button>
-  </div>
+  <footer data-page-node-id="xGjYzWPF6kcFlUO3Zc7f4o">数据保存在本浏览器（localStorage），换设备需重新添加</footer>
 
-  <div class="hint">空格键：暂停 / 继续</div>
-  <footer>Deployed on Vercel · Powered by Vibecoding</footer>
-
-<script>
-(function () {
-  var canvas = document.getElementById('board');
-  var ctx = canvas.getContext('2d');
-  var GRID = 21;                 // 格子数
-  var CELL = canvas.width / GRID;
-  var scoreEl = document.getElementById('score');
-  var bestEl = document.getElementById('best');
-  var speedEl = document.getElementById('speed');
-  var startOverlay = document.getElementById('startOverlay');
-  var overOverlay = document.getElementById('overOverlay');
-  var startBtn = document.getElementById('startBtn');
-  var retryBtn = document.getElementById('retryBtn');
-
-  var snake, dir, nextDir, food, score, best, timer, speed, running, paused;
-
-  best = parseInt(localStorage.getItem('snake_best') || '0', 10);
-  bestEl.textContent = best;
-
-  function reset() {
-    snake = [{x: 10, y: 10}, {x: 9, y: 10}, {x: 8, y: 10}];
-    dir = {x: 1, y: 0};
-    nextDir = dir;
-    score = 0;
-    speed = 1;
-    scoreEl.textContent = '0';
-    speedEl.textContent = '1';
-    placeFood();
-  }
-
-  function placeFood() {
-    do {
-      food = { x: Math.floor(Math.random() * GRID), y: Math.floor(Math.random() * GRID) };
-    } while (snake.some(function (s) { return s.x === food.x && s.y === food.y; }));
-  }
-
-  function interval() { return Math.max(70, 180 - (speed - 1) * 14); }
-
-  function step() {
-    dir = nextDir;
-    var head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
-
-    // 撞墙或撞自己
-    var hitWall = head.x < 0 || head.y < 0 || head.x >= GRID || head.y >= GRID;
-    var hitSelf = snake.some(function (s) { return s.x === head.x && s.y === head.y; });
-    if (hitWall || hitSelf) { gameOver(); return; }
-
-    snake.unshift(head);
-
-    if (head.x === food.x && head.y === food.y) {
-      score += 10;
-      scoreEl.textContent = score;
-      var newSpeed = Math.floor(score / 50) + 1;
-      if (newSpeed !== speed) { speed = newSpeed; speedEl.textContent = speed; restartTimer(); }
-      placeFood();
-    } else {
-      snake.pop();
-    }
-    draw();
-  }
-
-  function restartTimer() {
-    if (timer) clearInterval(timer);
-    timer = setInterval(step, interval());
-  }
-
-  function roundRect(x, y, w, h, r) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r);
-    ctx.arcTo(x, y, x + w, y, r);
-    ctx.closePath();
-  }
-
-  function draw() {
-    // 棋盘背景
-    ctx.fillStyle = 'rgba(15, 32, 39, 0.95)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // 网格微光
-    ctx.strokeStyle = 'rgba(255,255,255,0.035)';
-    for (var i = 1; i < GRID; i++) {
-      ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, canvas.height); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(canvas.width, i * CELL); ctx.stroke();
-    }
-
-    // 食物（发光苹果）
-    ctx.save();
-    ctx.shadowColor = '#f87171';
-    ctx.shadowBlur = 14;
-    ctx.fillStyle = '#f87171';
-    roundRect(food.x * CELL + 3, food.y * CELL + 3, CELL - 6, CELL - 6, 7);
-    ctx.fill();
-    ctx.restore();
-
-    // 蛇身（渐变：头亮尾暗）
-    for (var j = snake.length - 1; j >= 0; j--) {
-      var s = snake[j];
-      var t = snake.length > 1 ? j / (snake.length - 1) : 0;
-      var r = Math.round(74 + (34 - 74) * t);
-      var g = Math.round(222 + (197 - 222) * t);
-      var b = Math.round(128 + (94 - 128) * t);
-      ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
-      roundRect(s.x * CELL + 2, s.y * CELL + 2, CELL - 4, CELL - 4, j === 0 ? 8 : 5);
-      ctx.fill();
-    }
-
-    // 蛇眼睛
-    var h = snake[0];
-    ctx.fillStyle = '#06251a';
-    var ex = h.x * CELL + CELL / 2, ey = h.y * CELL + CELL / 2;
-    var off = CELL * 0.18;
-    ctx.beginPath(); ctx.arc(ex + dir.x * off - dir.y * off, ey + dir.y * off - dir.x * off, 2.2, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(ex + dir.x * off + dir.y * off, ey + dir.y * off + dir.x * off, 2.2, 0, Math.PI * 2); ctx.fill();
-  }
-
-  function gameOver() {
-    running = false;
-    clearInterval(timer);
-    if (score > best) {
-      best = score;
-      localStorage.setItem('snake_best', best);
-      bestEl.textContent = best;
-      document.getElementById('overTitle').textContent = '🎉 新纪录！';
-    } else {
-      document.getElementById('overTitle').textContent = '游戏结束';
-    }
-    document.getElementById('overText').innerHTML = '本局得分：<b style="color:#4ade80;font-size:20px">' + score + '</b><br>长度：' + snake.length + ' 节';
-    overOverlay.style.display = 'flex';
-  }
-
-  function start() {
-    reset();
-    running = true;
-    paused = false;
-    startOverlay.style.display = 'none';
-    overOverlay.style.display = 'none';
-    draw();
-    restartTimer();
-  }
-
-  startBtn.addEventListener('click', start);
-  retryBtn.addEventListener('click', start);
-
-  function setDir(x, y) {
-    // 不允许 180 度掉头
-    if (dir.x === -x && dir.y === -y) return;
-    nextDir = { x: x, y: y };
-  }
-
-  var keyMap = {
-    ArrowUp: [0, -1], KeyW: [0, -1],
-    ArrowDown: [0, 1], KeyS: [0, 1],
-    ArrowLeft: [-1, 0], KeyA: [-1, 0],
-    ArrowRight: [1, 0], KeyD: [1, 0]
-  };
-
-  document.addEventListener('keydown', function (e) {
-    if (e.code === 'Space' && running) {
-      paused = !paused;
-      if (paused) { clearInterval(timer); }
-      else { restartTimer(); }
-      e.preventDefault();
-      return;
-    }
-    var m = keyMap[e.code];
-    if (m) { setDir(m[0], m[1]); e.preventDefault(); }
-  });
-
-  // 屏幕按钮
-  Array.prototype.forEach.call(document.querySelectorAll('.controls button'), function (btn) {
-    btn.addEventListener('click', function () {
-      var d = btn.getAttribute('data-dir');
-      if (d === 'up') setDir(0, -1);
-      if (d === 'down') setDir(0, 1);
-      if (d === 'left') setDir(-1, 0);
-      if (d === 'right') setDir(1, 0);
-    });
-  });
-
-  // 触屏滑动
-  var tx = 0, ty = 0;
-  canvas.addEventListener('touchstart', function (e) {
-    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
-  }, { passive: true });
-  canvas.addEventListener('touchend', function (e) {
-    var dx = e.changedTouches[0].clientX - tx;
-    var dy = e.changedTouches[0].clientY - ty;
-    if (Math.abs(dx) < 20 && Math.abs(dy) < 20) return;
-    if (Math.abs(dx) > Math.abs(dy)) setDir(dx > 0 ? 1 : -1, 0);
-    else setDir(0, dy > 0 ? 1 : -1);
-  }, { passive: true });
-
-  // 初始画面
-  reset();
-  draw();
-})();
-</script>
+  <script src="js/constants.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
